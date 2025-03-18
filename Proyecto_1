@@ -43,10 +43,17 @@ def registrar_estudiante():
         print("Error: La asignatura no existe.")
         return
     
+    for e in asignaturas[asignatura]["estudiantes"]:
+        if e["nombre"].lower() == nombre.lower():
+            print("Error: El estudiante ya está inscrito en esta asignatura.")
+            return
+    
     descuento = calcular_descuento(estrato, asignaturas[asignatura]["creditos"], asignaturas[asignatura]["costo_credito"])
-    estudiante = {"nombre": nombre, "genero": genero, "edad": edad, "estrato": estrato, "descuento": descuento}
+    costo_final = (asignaturas[asignatura]["creditos"] * asignaturas[asignatura]["costo_credito"]) - descuento
+    
+    estudiante = {"nombre": nombre, "genero": genero, "edad": edad, "estrato": estrato, "descuento": descuento, "costo_final": costo_final}
     asignaturas[asignatura]["estudiantes"].append(estudiante)
-    print(f"Estudiante '{nombre}' matriculado en '{asignatura}'.")
+    print(f"Estudiante '{nombre}' matriculado en '{asignatura}'. Pago final después de descuento: ${costo_final:.2f}")
 
 def calcular_descuento(estrato, creditos, costo_credito):
     descuentos = {1: 0.5, 2: 0.3, 3: 0.1}
@@ -60,6 +67,8 @@ def mostrar_estadisticas():
     print("\n=== Estadísticas ===")
     for nombre, datos in asignaturas.items():
         print(f"- {nombre}: {len(datos['estudiantes'])} estudiantes")
+        for e in datos["estudiantes"]:
+            print(f"  - {e['nombre']} (Estrato {e['estrato']}, Pago Final: ${e['costo_final']:.2f})")
 
 def asignatura_mayor_recaudo():
     if not asignaturas:
@@ -134,3 +143,4 @@ def menu():
             print("Opción inválida.")
 
 menu()
+
